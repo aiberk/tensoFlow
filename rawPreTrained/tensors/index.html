@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <h1>TensorFlow Tensors</h1>
+  </body>
+
+  <script
+    src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs/dist/tf.min.js"
+    type="text/javascript"></script>
+  <script>
+    let tensor = tf.tensor2d([
+      [1, 2, 3],
+      [4, 5, 6],
+      [7, 8, 9],
+    ]);
+    tensor.print();
+    let scalar = tf.scalar(3);
+    let newTensor = tensor.mul(scalar);
+    newTensor.print();
+    let reshapedTensor = tensor.reshape([1, 9]);
+    reshapedTensor.print();
+  </script>
+</html>
