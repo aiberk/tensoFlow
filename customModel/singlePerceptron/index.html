@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Hello World - TensorFlow.js</title>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <!-- Import the webpage's stylesheet -->
+    <style>
+      body {
+        font-family: helvetica, arial, sans-serif;
+        margin: 2em;
+      }
+
+      h1 {
+        font-style: italic;
+        color: #ff6f00;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>TensorFlow.js Load Raw TFJS MoveNet Model</h1>
+    <p id="url"></p>
+
+    <p id="status">Awaiting TF.js load</p>
+
+    <img
+      id="exampleImg"
+      width="640"
+      height="360"
+      crossorigin
+      src="    https://storage.googleapis.com/jmstore/TensorFlowJS/EdX/standing.jpg" />
+
+    <!-- Import TensorFlow.js library -->
+    <script
+      src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@3.11.0/dist/tf.min.js"
+      type="text/javascript"></script>
+
+    <!-- Import the page's JavaScript to do some stuff -->
+    <script>
+      const url =
+        "https://www.kaggle.com/models/google/movenet/frameworks/tfJs/variations/singlepose-lightning/versions/4";
+
+      const urlDisplay = document.getElementById("url");
+      const image = document.getElementById("exampleImg");
+      urlDisplay.innerText = url;
+
+      let model = undefined;
+      async function loadModel() {
+        model = await tf.loadGraphModel(url, { fromTFHub: true });
+
+        const status = document.getElementById("status");
+        status.innerText = "Loaded model - version: " + model.artifacts.format;
+        console.log(model);
+
+        let exampleInput = tf.zeros([1, 192, 192, 3], "int32");
+        let imageTensor = tf.browser.fromPixels(image);
+        console.log(imageTensor.shape);
+
+        //Image Preprocessing
+        let cropStartPoint = [15, 170, 0];
+        let cropSize = [345, 345, 3];
+        let croppedTensor = tf.slice(imageTensor, cropStartPoint, cropSize);
+        let resizedTensor = tf.image
+          .resizeBilinear(croppedTensor, [192, 192], true)
+          .toInt();
+
+        console.log(resizedTensor.shape);
+
+        let tensorOutput = model.predict(tf.expandDims(resizedTensor));
+        let arrayOutput = await tensorOutput.array();
+        console.log(arrayOutput);
+        model.dispose();
+        exampleInput.dispose();
+        tensorOutput.dispose();
+        imageTensor.dispose();
+        croppedTensor.dispose();
+        resizedTensor.dispose();
+      }
+      loadModel();
+    </script>
+  </body>
+</html>
+
+<!-- 
+const status = document.getElementById("status");
+status.innerText = "Loaded TensorFlow.js - version: " + tf.version.tfjs; -->
