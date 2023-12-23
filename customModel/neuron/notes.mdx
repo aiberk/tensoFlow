@@ -1,0 +1,32 @@
+### Limitations of the Perceptron Model
+
+The limitations of the perceptron model in your TensorFlow.js script can be attributed to several factors, including the simplicity of the perceptron's architecture, the nature of the problem being solved, and the training process.
+
+#### 1. Simplicity of the Perceptron Architecture
+
+- **Single Neuron**: Your model is a simple perceptron with only one dense layer containing a single neuron. This is a very basic form of neural network. Single-layer perceptrons can model linear relationships but are inadequate for more complex, non-linear relationships.
+- **Linear Modeling**: The model performs a linear transformation, which is fundamentally limited in its ability to model non-linear relationships such as squaring a number.
+
+#### 2. Nature of the Problem
+
+- **Non-Linear Problem**: Predicting the square of a number is a non-linear task. To accurately model this, a neural network with multiple layers and non-linear activation functions would be more appropriate.
+
+#### 3. Training Process
+
+- **Learning Rate**: The learning rate is crucial for training. If not set appropriately, it can hinder the training process.
+- **Epochs and Batch Size**: These are important hyperparameters. Adjusting them might improve performance but will not overcome the linear nature of the model.
+
+#### 4. Expectation vs. Reality
+
+- **Computational Simplicity**: While a computer can easily perform a squaring operation, modeling this operation with a basic neural network is more complex.
+
+#### Solution
+
+To model a non-linear function like squaring, use a multi-layer neural network with non-linear activation functions. Here's an example:
+
+```javascript
+const model = tf.sequential();
+model.add(tf.layers.dense({ inputShape: [1], units: 64, activation: "relu" }));
+model.add(tf.layers.dense({ units: 64, activation: "relu" }));
+model.add(tf.layers.dense({ units: 1 }));
+```

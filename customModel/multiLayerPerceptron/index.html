@@ -20,6 +20,7 @@
   </head>
   <body>
     <h1 id="title"></h1>
+    <h1 id="title2"></h1>
 
     <div id="console"></div>
 
@@ -59,6 +60,9 @@
         const folderName = getFolderNameFromUrl();
         const folderNameEdit = camelCaseToNormalCase(folderName);
         const title = document.getElementById("title");
+        const title2 = document.getElementById("title2");
+        let mult = 7 * 7;
+        title2.innerText = "Solution: " + mult;
         title.innerText = folderNameEdit;
         document.title = folderNameEdit;
       });
