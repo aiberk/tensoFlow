@@ -45,8 +45,13 @@ FEATURE_RESULTS.MAX_VALUES.print();
 const model = tf.sequential();
 
 //One dense layer with 1 neuron,
-//input of 2 feature values representing the house size and  number of bedrooms
-model.add(tf.layers.dense({ inputShape: [1], units: 1 }));
+//input of 1 feature values of integers squared into 3 neurons
+model.add(tf.layers.dense({ inputShape: [1], units: 100, activation: "relu" }));
+//Hidden layer
+model.add(tf.layers.dense({ units: 100, activation: "relu" }));
+// Output neuron
+model.add(tf.layers.dense({ units: 1 }));
+
 model.summary();
 
 // Configure model for training
@@ -64,7 +69,7 @@ async function train() {
       callbacks: { onEpochEnd: logProgress },
       shuffle: true, // Shuffle data
       batchSize: 2, // Batch size lots of data hence 64
-      epochs: 300, // Go over data 10 times
+      epochs: 200, // Go over data 10 times
     }
   );
 
@@ -100,12 +105,12 @@ async function evaluate() {
   console.log(tf.memory().numTensors);
 }
 function logProgress(epoch, logs) {
-  console.log("Epoch: " + epoch + " Loss: " + Math.sqrt(logs.loss));
+  // console.log("Epoch: " + epoch + " Loss: " + Math.sqrt(logs.loss));
   if (epoch % 70 == 0) {
     OPTIMIZER.setLearningRate(LEARNING_RATE / 2);
   }
 }
 
-const LEARNING_RATE = 0.01; // Choosing a learning rate
+const LEARNING_RATE = 0.0001; // Choosing a learning rate
 const OPTIMIZER = tf.train.sgd(LEARNING_RATE); // Stochastic gradient descent
 train();
