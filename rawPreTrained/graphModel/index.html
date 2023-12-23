@@ -19,7 +19,7 @@
     </style>
   </head>
   <body>
-    <h1>TensorFlow.js Kaggle Graph model</h1>
+    <h1 id="title">TensorFlow.js Kaggle Graph model</h1>
     <p id="url"></p>
 
     <p id="status">Awaiting TF.js load</p>
@@ -31,6 +31,36 @@
 
     <!-- Import the page's JavaScript to do some stuff -->
     <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        // Function to extract folder name from URL
+        function getFolderNameFromUrl() {
+          const url = window.location.href;
+          const urlSegments = url.split("/");
+          // Assuming the folder is the second last segment in the URL
+          const folderName = urlSegments[urlSegments.length - 2];
+          return folderName;
+        }
+
+        function camelCaseToNormalCase(str) {
+          // Add a space before all caps and trim
+          return (
+            str
+              .replace(/([A-Z])/g, " $1")
+              .trim()
+              // Capitalize the first letter
+              .replace(/^./, function (str) {
+                return str.toUpperCase();
+              })
+          );
+        }
+
+        // Set the title based on the folder name
+        const folderName = getFolderNameFromUrl();
+        const folderNameEdit = camelCaseToNormalCase(folderName);
+        const title = document.getElementById("title");
+        title.innerText = folderNameEdit;
+      });
+
       const url =
         "https://www.kaggle.com/models/google/movenet/frameworks/tfJs/variations/singlepose-lightning/versions/4";
 
