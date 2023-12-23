@@ -90,6 +90,8 @@ async function evaluate() {
     // Prints the predicted price of the house
     output.print();
   });
+
+  // await model.save("downloads://my-model");
   FEATURE_RESULTS.MIN_VALUES.dispose();
   FEATURE_RESULTS.MAX_VALUES.dispose();
   model.dispose();
