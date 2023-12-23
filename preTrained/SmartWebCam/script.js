@@ -58,7 +58,6 @@ function enableCam(event) {
   });
 }
 
-// Placeholder function for next step.
 var children = [];
 
 function predictWebcam() {
@@ -107,6 +106,17 @@ function predictWebcam() {
         liveView.appendChild(p);
         children.push(highlighter);
         children.push(p);
+      } else {
+        const p = document.createElement("p");
+        p.innerText = "Don't know bro";
+        p.style =
+          "margin-left: " +
+          predictions[n].bbox[0] +
+          "px; margin-top: " +
+          (predictions[n].bbox[1] - 10) +
+          "px; width: " +
+          (predictions[n].bbox[2] - 10) +
+          "px; top: 0; left: 0;";
       }
     }
 
