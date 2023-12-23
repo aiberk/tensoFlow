@@ -69,7 +69,7 @@ async function train() {
       callbacks: { onEpochEnd: logProgress },
       shuffle: true, // Shuffle data
       batchSize: 2, // Batch size lots of data hence 64
-      epochs: 200, // Go over data 10 times
+      epochs: 300, // Go over data 10 times
     }
   );
 
@@ -87,7 +87,7 @@ async function evaluate() {
   // Predicting the price of 1 hard coded value ( a house with 750 sqft and 1 bedroom)
   tf.tidy(function () {
     let newInput = normalize(
-      tf.tensor1d([7]),
+      tf.tensor1d([9]),
       FEATURE_RESULTS.MIN_VALUES,
       FEATURE_RESULTS.MAX_VALUES
     );
