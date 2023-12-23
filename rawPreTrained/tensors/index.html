@@ -24,5 +24,9 @@
     newTensor.print();
     let reshapedTensor = tensor.reshape([1, 9]);
     reshapedTensor.print();
+    tensor.dispose();
+    scalar.dispose();
+    newTensor.dispose();
+    reshapedTensor.dispose();
   </script>
 </html>
