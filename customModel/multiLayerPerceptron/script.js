@@ -1,8 +1,8 @@
 // import { TRAINING_DATA } from "https://storage.googleapis.com/jmstore/TensorFlowJS/EdX/TrainingData/real-estate-data.js";
 const LEARNING_RATE = 0.0001;
-const TEST_INPUT = 5;
+const TEST_INPUT = 10;
 const BATCHSIZE = 2;
-const EPOCH = 180;
+const EPOCH = 120;
 const title2 = document.getElementById("title2");
 let mult = TEST_INPUT * TEST_INPUT;
 title2.innerText = "Solution: " + mult;
