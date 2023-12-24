@@ -60,31 +60,11 @@
         const folderName = getFolderNameFromUrl();
         const folderNameEdit = camelCaseToNormalCase(folderName);
         const title = document.getElementById("title");
-        const title2 = document.getElementById("title2");
-        let mult = 9 * 9;
-        title2.innerText = "Solution: " + mult;
+
         title.innerText = folderNameEdit;
         document.title = folderNameEdit;
       });
-
-      (function () {
-        const oldLog = console.log;
-        const consoleElement = document.getElementById("console");
-
-        console.log = function (message) {
-          // Call the old console.log function
-          oldLog.apply(console, arguments);
-
-          // Also display in the webpage console
-          if (typeof message == "object") {
-            consoleElement.innerHTML +=
-              (JSON && JSON.stringify ? JSON.stringify(message) : message) +
-              "<br />";
-          } else {
-            consoleElement.innerHTML += message + "<br />";
-          }
-        };
-      })();
     </script>
+    <script src="/scripts/renderLog.js"></script>
   </body>
 </html>
