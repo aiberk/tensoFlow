@@ -1,87 +1,65 @@
-// import { TRAINING_DATA } from "https://storage.googleapis.com/jmstore/TensorFlowJS/EdX/TrainingData/real-estate-data.js";
+import { TRAINING_DATA } from "https://storage.googleapis.com/jmstore/TensorFlowJS/EdX/TrainingData/mnist.js";
 const LEARNING_RATE = 0.0001;
 const TEST_INPUT = 10;
-const BATCHSIZE = 2;
-const EPOCH = 120;
-const title2 = document.getElementById("title2");
-let mult = TEST_INPUT * TEST_INPUT;
-title2.innerText = "Solution: " + mult;
-const INPUTS = [];
-for (let n = 0; n <= 20; n++) {
-  INPUTS.push(n);
-}
+const BATCHSIZE = 512;
+const EPOCH = 50;
+const INPUTS = TRAINING_DATA.inputs;
 
-const OUTPUTS = [];
-for (let n = 0; n < INPUTS.length; n++) {
-  OUTPUTS.push(INPUTS[n] * INPUTS[n]);
-}
+const OUTPUTS = TRAINING_DATA.outputs;
 
 tf.util.shuffleCombo(INPUTS, OUTPUTS);
 
-const INPUTS_TENSOR = tf.tensor1d(INPUTS);
-const OUTPUTS_TENSOR = tf.tensor1d(OUTPUTS);
-
-function normalize(tensor, min, max) {
-  const result = tf.tidy(function () {
-    const MIN_VALUES = min || tensor.min(0);
-    const MAX_VALUES = max || tensor.max(0);
-
-    const TENSOR_SUBTRACT_MIN_VALUE = tensor.sub(MIN_VALUES);
-
-    const RANGE_SIZE = MAX_VALUES.sub(MIN_VALUES);
-    const NORMALIZED_VALUES = TENSOR_SUBTRACT_MIN_VALUE.div(RANGE_SIZE);
-    return { NORMALIZED_VALUES, MIN_VALUES, MAX_VALUES };
-  });
-  return result;
-}
-
-const FEATURE_RESULTS = normalize(INPUTS_TENSOR);
-console.log("Normalized Values");
-FEATURE_RESULTS.NORMALIZED_VALUES.print();
-
-console.log("Min Values");
-FEATURE_RESULTS.MIN_VALUES.print();
-
-console.log("Max Values");
-FEATURE_RESULTS.MAX_VALUES.print();
-
-// INPUTS_TENSOR.dispose();
-// OUTPUTS_TENSOR.dispose();
+const INPUTS_TENSOR = tf.tensor2d(INPUTS);
+const OUTPUTS_TENSOR = tf.oneHot(tf.tensor1d(OUTPUTS, "int32"), 10);
 
 // Create and define model
 const model = tf.sequential();
 
 //One dense layer with 1 neuron,
 //input of 1 feature values of integers squared into 3 neurons
-model.add(tf.layers.dense({ inputShape: [1], units: 100, activation: "relu" }));
+model.add(
+  tf.layers.dense({ inputShape: [784], units: 32, activation: "relu" })
+);
 //Hidden layer
-model.add(tf.layers.dense({ units: 100, activation: "relu" }));
-// Output neuron
-model.add(tf.layers.dense({ units: 1 }));
+model.add(tf.layers.dense({ units: 16, activation: "relu" }));
+model.add(tf.layers.dense({ units: 10, activation: "softmax" }));
 
 model.summary();
 
-// Configure model for training
+let CANVAS = document.getElementById("canvas");
+const CTX = CANVAS.getContext("2d");
+function drawImage(digit) {
+  var imageData = CTX.getImageData(0, 0, 28, 28);
+  for (let i = 0; i < digit.length; i++) {
+    imageData.data[i * 4] = digit[i] * 255; // Red channel
+    imageData.data[i * 4 + 1] = digit[i] * 255; // Red channel
+    imageData.data[i * 4 + 2] = digit[i] * 255; // Red channel
+    imageData.data[i * 4 + 3] = 255; // Red channel
+  }
+
+  CTX.putImageData(imageData, 0, 0);
+  setTimeout(evaluate, interval);
+}
+
+// // Configure model for training
 async function train() {
   model.compile({
-    optimizer: OPTIMIZER,
-    loss: "meanSquaredError",
+    optimizer: "adam",
+    loss: "categoricalCrossentropy",
+    metrics: ["accuracy"],
   });
 
   // Finally train the model
-  let results = await model.fit(
-    FEATURE_RESULTS.NORMALIZED_VALUES,
-    OUTPUTS_TENSOR,
-    {
-      callbacks: { onEpochEnd: logProgress },
-      shuffle: true, // Shuffle data
-      batchSize: BATCHSIZE, // Batch size lots of data hence 64
-      epochs: EPOCH, // Go over data 10 times
-    }
-  );
+  let results = await model.fit(INPUTS_TENSOR, OUTPUTS_TENSOR, {
+    shuffle: true, // Shuffle data
+    validationSplit: 0.2, // 20% of data used for validation
+    batchSize: BATCHSIZE, // Batch size lots of data hence 64
+    epochs: EPOCH, // Go over data 10 times
+    callbacks: { onEpochEnd: logProgress },
+  });
 
   OUTPUTS_TENSOR.dispose();
-  FEATURE_RESULTS.NORMALIZED_VALUES.dispose();
+  INPUTS_TENSOR.dispose();
   console.log(
     "Average Loss: " +
       Math.sqrt(results.history.loss[results.history.loss.length - 1])
@@ -90,34 +68,37 @@ async function train() {
   evaluate();
 }
 
-async function evaluate() {
-  // Predicting the price of 1 hard coded value ( a house with 750 sqft and 1 bedroom)
-  tf.tidy(function () {
-    let newInput = normalize(
-      tf.tensor1d([TEST_INPUT]),
-      FEATURE_RESULTS.MIN_VALUES,
-      FEATURE_RESULTS.MAX_VALUES
-    );
+const PREDICTION_ELEMENT = document.getElementById("prediction");
 
-    let output = model.predict(newInput.NORMALIZED_VALUES);
+async function evaluate() {
+  //Select a random input from the input data
+  const OFFSET = Math.floor(Math.random() * INPUTS.length);
+
+  let answer = tf.tidy(function () {
+    let newInput = tf.tensor1d(INPUTS[OFFSET]).expandDims();
+
+    let output = model.predict(newInput);
 
     // Prints the predicted price of the house
     output.print();
+    return output.squeeze().argMax();
   });
 
-  // await model.save("downloads://my-model");
-  FEATURE_RESULTS.MIN_VALUES.dispose();
-  FEATURE_RESULTS.MAX_VALUES.dispose();
-  model.dispose();
-  console.log(tf.memory().numTensors);
-}
-function logProgress(epoch, logs) {
-  // console.log("Epoch: " + epoch + " Loss: " + Math.sqrt(logs.loss));
-  if (epoch % 70 == 0) {
-    OPTIMIZER.setLearningRate(LEARNING_RATE / 2);
-  }
+  answer.array().then(function (index) {
+    PREDICTION_ELEMENT.innerText = index;
+    PREDICTION_ELEMENT.setAttribute(
+      "class",
+      index == OUTPUTS[OFFSET] ? "correct" : "wrong"
+    );
+    answer.dispose();
+    drawImage(INPUTS[OFFSET]);
+  });
 }
 
-// Choosing a learning rate
-const OPTIMIZER = tf.train.sgd(LEARNING_RATE); // Stochastic gradient descent
+function logProgress(epoch, logs) {
+  // console.log("Epoch: " + epoch + " Loss: " + Math.sqrt(logs.loss));
+}
 train();
+// // Choosing a learning rate
+// const OPTIMIZER = tf.train.sgd(LEARNING_RATE); // Stochastic gradient descent
+// train();
