@@ -1,4 +1,11 @@
 // import { TRAINING_DATA } from "https://storage.googleapis.com/jmstore/TensorFlowJS/EdX/TrainingData/real-estate-data.js";
+const LEARNING_RATE = 0.0001;
+const TEST_INPUT = 5;
+const BATCHSIZE = 2;
+const EPOCH = 180;
+const title2 = document.getElementById("title2");
+let mult = TEST_INPUT * TEST_INPUT;
+title2.innerText = "Solution: " + mult;
 const INPUTS = [];
 for (let n = 0; n <= 20; n++) {
   INPUTS.push(n);
@@ -68,8 +75,8 @@ async function train() {
     {
       callbacks: { onEpochEnd: logProgress },
       shuffle: true, // Shuffle data
-      batchSize: 2, // Batch size lots of data hence 64
-      epochs: 300, // Go over data 10 times
+      batchSize: BATCHSIZE, // Batch size lots of data hence 64
+      epochs: EPOCH, // Go over data 10 times
     }
   );
 
@@ -87,7 +94,7 @@ async function evaluate() {
   // Predicting the price of 1 hard coded value ( a house with 750 sqft and 1 bedroom)
   tf.tidy(function () {
     let newInput = normalize(
-      tf.tensor1d([9]),
+      tf.tensor1d([TEST_INPUT]),
       FEATURE_RESULTS.MIN_VALUES,
       FEATURE_RESULTS.MAX_VALUES
     );
@@ -111,6 +118,6 @@ function logProgress(epoch, logs) {
   }
 }
 
-const LEARNING_RATE = 0.0001; // Choosing a learning rate
+// Choosing a learning rate
 const OPTIMIZER = tf.train.sgd(LEARNING_RATE); // Stochastic gradient descent
 train();
