@@ -12,7 +12,28 @@
     <h1 id="title"></h1>
     <h2 id="title2"></h2>
 
-    <div id="console"></div>
+    <section class="box">
+      <h2>Input Image</h2>
+      <p>
+        Input image is a 28x28 pixel grayscale image from MNIST dataset - a real
+        hand drawn digit!
+      </p>
+      <canvas id="canvas" width="28" height="28"></canvas>
+    </section>
+
+    <section class="box">
+      <h2>Prediction</h2>
+      <p>
+        Below you see what number the trained TensorFlow.js model has predicted
+        from the input image.
+      </p>
+      <p>Red is a wrong prediction, Green is a correct one.</p>
+      <p id="prediction">Training model. Please wait...</p>
+    </section>
+
+    <div id="console">
+      <h2>Console Output</h2>
+    </div>
 
     <!-- Import TensorFlow.js library -->
     <script
