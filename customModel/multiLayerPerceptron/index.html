@@ -6,17 +6,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <!-- Import the webpage's stylesheet -->
-    <style>
-      body {
-        font-family: helvetica, arial, sans-serif;
-        margin: 2em;
-      }
-
-      h1 {
-        font-style: italic;
-        color: #ff6f00;
-      }
-    </style>
+    <link rel="stylesheet" type="text/css" href="/styles/style.css" />
   </head>
   <body>
     <h1 id="title"></h1>
@@ -32,39 +22,7 @@
     <script type="module" src="perceptron.js" defer></script>
 
     <!-- Import the page's JavaScript to do some stuff -->
-    <script>
-      document.addEventListener("DOMContentLoaded", function () {
-        // Function to extract folder name from URL
-        function getFolderNameFromUrl() {
-          const url = window.location.href;
-          const urlSegments = url.split("/");
-          // Assuming the folder is the second last segment in the URL
-          const folderName = urlSegments[urlSegments.length - 2];
-          return folderName;
-        }
-
-        function camelCaseToNormalCase(str) {
-          // Add a space before all caps and trim
-          return (
-            str
-              .replace(/([A-Z])/g, " $1")
-              .trim()
-              // Capitalize the first letter
-              .replace(/^./, function (str) {
-                return str.toUpperCase();
-              })
-          );
-        }
-
-        // Set the title based on the folder name
-        const folderName = getFolderNameFromUrl();
-        const folderNameEdit = camelCaseToNormalCase(folderName);
-        const title = document.getElementById("title");
-
-        title.innerText = folderNameEdit;
-        document.title = folderNameEdit;
-      });
-    </script>
+    <script src="/scripts/content.js"></script>
     <script src="/scripts/renderLog.js"></script>
   </body>
 </html>
